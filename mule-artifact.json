@@ -1,0 +1,32 @@
+{
+  "configs": [
+    "router.xml",
+    "errors.xml",
+    "config.xml",
+    "reliable-transaction.xml",
+    "logic.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "mule4-skeleton-api",
+  "minMuleVersion": "4.1.1",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedResources": [
+        "api/.gitignore",
+        "api/api.raml",
+        "api/examples/ping/get-response.json",
+        "api/examples/ping/put-request.json",
+        "api/examples/ping/put-response.json",
+        "api/examples/request/post-request.json",
+        "api/examples/request/post-response.json"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}

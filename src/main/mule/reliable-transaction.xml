@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:min-log="http://www.mulesoft.org/schema/mule/min-log" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd">
+
+	<flow name="reliable-transaction.publish" doc:id="23d2aac0-ca04-474d-aa6f-3b38a6e97125" >
+		<ee:transform doc:name="Combine headers and body" doc:id="0d59e9cc-65e6-4d19-99b5-2059782af130" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+  headers: {
+    "x_transaction_id": vars.transactionProperties['x-transaction-id']
+  },
+  body: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<vm:publish doc:name="Publish" doc:id="0063d32f-18c8-4c37-816c-68f4d9edcd23" 
+			config-ref="reliable_transaction_Config" 
+			queueName="${secure::reliable-transaction.queue}" >
+			<vm:content >#[payload]</vm:content>
+		</vm:publish>
+	</flow>
+	
+	<flow name="reliable-transaction.consume" doc:id="261ff099-0594-48a0-83b0-a257c04d7acb" >
+		<vm:listener queueName="${secure::reliable-transaction.queue}" doc:name="Listener" doc:id="b580ebf9-850e-4633-80e0-efd9a9dac387" config-ref="reliable_transaction_Config"/>
+        <min-log:new doc:name="Set transaction properties" target="transactionProperties" headers="#[payload.headers]" />
+ 		<min-log:timed transactionProperties="#[vars.transactionProperties]"
+			doc:name="Timed">
+			<logger level="INFO" doc:name="Logger" doc:id="2ca77e4c-7253-4310-9ab6-8278d69a2df8" message="#[payload]"/>
+			<ee:transform doc:name="Transform Message" doc:id="b4bf84aa-631f-4620-b73c-dc604908d581" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload.body]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="d7aecfb0-f458-469a-a0b8-9aa48cfd4ed4" message="#[payload]"/>
+        </min-log:timed>
+	</flow>
+
+</mule>
