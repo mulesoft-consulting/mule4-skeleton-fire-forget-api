@@ -9,23 +9,16 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/min-log http://www.mulesoft.org/schema/mule/min-log/current/mule-min-log.xsd">
 
 	<flow name="reliable-transaction.publish" doc:id="23d2aac0-ca04-474d-aa6f-3b38a6e97125" >
-		<ee:transform doc:name="Combine headers and body" doc:id="0d59e9cc-65e6-4d19-99b5-2059782af130" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-{
-  headers: {
-    "x_transaction_id": vars.transactionProperties['x-transaction-id']
-  },
-  body: payload
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
 		<vm:publish doc:name="Publish" doc:id="0063d32f-18c8-4c37-816c-68f4d9edcd23" 
 			config-ref="reliable_transaction_Config" 
 			queueName="${secure::reliable-transaction.queue}" >
-			<vm:content >#[payload]</vm:content>
+			<vm:content ><![CDATA[#[output application/json --- {
+  headers: {
+    "client_id": "${secure::my.client-id}",
+    "x_transaction_id": vars.transactionProperties['x-transaction-id']
+  },
+  body: payload
+}]]]></vm:content>
 		</vm:publish>
 	</flow>
 	

@@ -7,6 +7,7 @@ Note, the scope features of minimal-logging are not displayed correctly by Studi
 
 The project contains examples using:
 
+* VM Connector to publish and consume the queue
 * The minimal-logging connector, 
 * The secure property connector (formally called the secure-property-placeholder),
 * Maven deployment using the mule-maven-plugin descriptor,
@@ -20,13 +21,14 @@ Developers of an API can copy this project to get all the "boilerplate" elements
 
 ### Configuration Properties
 
-The configuration properties are stored in the src/main/resources-filtered/mule4-skeleton-proxy-${mule.env}.yaml file:
+The configuration properties are stored in the src/main/resources-filtered/mule4-skeleton-fire-forget-api-${mule.env}.yaml file:
 
 * api.id contains the Api Manager instance's autodiscovery api id,
 * api.base is the base uri for the API, the default is the project name taken from the pom file,
 * api.port is the port number of the Api's HTTP listener,
 * my.client-id is the client id this API uses to call other APIs
 * my.client-secret is the client secret registered for this API to use for calling other APIs
+* reliable-transaction.queue is the name of the VM queue to use
 
 Note that the api.port is not used if a shared domain is configured and used for the HTTP listener configuration.
 
